@@ -4,7 +4,7 @@
 
     <groupId>com.komante</groupId>
     <artifactId>multi-index-lucene-manager</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <name>MultiIndexLuceneManager</name>
     <description>
 
@@ -63,7 +63,7 @@
         <connection>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</connection>
         <url>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</url>
         <developerConnection>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</developerConnection>
-      <tag>multi-index-lucene-manager-1.0</tag>
+      <tag>HEAD</tag>
   </scm>
     <distributionManagement>
         <repository>
