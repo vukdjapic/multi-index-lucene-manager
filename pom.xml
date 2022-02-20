@@ -66,4 +66,11 @@
         <url>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</url>
         <developerConnection>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</developerConnection>
     </scm>
+    <distributionManagement>
+        <repository>
+            <id>internal.repo</id>
+            <name>Internal repo</name>
+            <url>file:///home/vuk/mvnLocalRepository</url>
+        </repository>
+    </distributionManagement>
 </project>
