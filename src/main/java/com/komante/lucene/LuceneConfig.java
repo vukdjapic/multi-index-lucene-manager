@@ -13,10 +13,14 @@ public class LuceneConfig {
     @Builder(toBuilder = true)
     @ToString
     public static class HighlightsConfig {
+        public static class HighlightsConfigBuilder {
+        }
+
         private int fragmentSizeChars = 240;
         /** Max number of fragments per document */
         private int numberOfDocumentFragments = 12;
     }
+
 
     public static HighlightsConfig.HighlightsConfigBuilder highlightsConfigBuilder() {
         return new HighlightsConfig().toBuilder();
