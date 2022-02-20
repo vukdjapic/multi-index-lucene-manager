@@ -60,4 +60,10 @@
         </dependency>
 
     </dependencies>
+
+    <scm>
+        <connection>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</connection>
+        <url>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</url>
+        <developerConnection>scm:git:git@github.com:vukdjapic/multi-index-lucene-manager.git</developerConnection>
+    </scm>
 </project>
