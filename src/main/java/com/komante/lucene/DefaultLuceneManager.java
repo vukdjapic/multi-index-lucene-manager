@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-public class DefaultLuceneManager implements  LuceneManager{
+public class DefaultLuceneManager implements LuceneManager {
 
     private LuceneConfig luceneConfig;
     private Path indexPath;
@@ -117,7 +117,7 @@ public class DefaultLuceneManager implements  LuceneManager{
 
     @Override
     public List<Document> search(Index index, Query query) {
-        return search(index,query, false);
+        return search(index, query, false);
     }
 
     @Override
@@ -167,8 +167,6 @@ public class DefaultLuceneManager implements  LuceneManager{
             String text = doc.get("content");
             TokenStream stream = TokenSources.getAnyTokenStream(indexHandle.getReader(), docid, "content", indexHandle.getAnalyzer());
             try {
-                // String[] fragments = highlighter.getBestFragments(stream, text, luceneConfig.getHighlightsConfig().getNumberOfDocumentFragments
-                // ());
                 TextFragment[] bestTextFragments = highlighter.getBestTextFragments(stream, text, false, luceneConfig.getHighlightsConfig()
                     .getNumberOfDocumentFragments());
                 List<String> fragmentsList = Stream.of(bestTextFragments).map(TextFragment::toString).collect(Collectors.toList());
@@ -234,7 +232,7 @@ public class DefaultLuceneManager implements  LuceneManager{
      */
     @Override
     @SneakyThrows
-    public List<TermVectorData> getDocumentTerms(Index index, String idField, String idValue, String termField) {
+    public List<TermVectorData> getDocumentTerms(Index index, String idField, String idValue, String termField, boolean includeOffsets) {
         IndexHandle indexHandle = getIndexHandle(index);
         IndexReader reader = indexHandle.getReader();
         TermQuery query = new TermQuery(new Term(idField, idValue));
@@ -244,17 +242,27 @@ public class DefaultLuceneManager implements  LuceneManager{
         }
         int docNumber = uniqueDocumentNumber.get();
         Terms termVector = reader.getTermVector(docNumber, termField);
-        TermsEnum itr = termVector.iterator();
+        TermsEnum termsEnum = termVector.iterator();
         BytesRef term = null;
         List<TermVectorData> termsData = new ArrayList<>();
-        while ((term = itr.next()) != null) {
+        while ((term = termsEnum.next()) != null) {
             String termStr = term.utf8ToString();
-            long termFreq = itr.totalTermFreq();   //this only return frequency in this doc
-            //long docCount = itr.docFreq();   //docCount = 1 in all cases
+            long termFreq = termsEnum.totalTermFreq();   //this only return frequency in this doc
+            //long docCount = termsEnum.docFreq();   //docCount = 1 in all cases
             Term termInstance = new Term(termField, termStr);
             long totalTermFreq = reader.totalTermFreq(termInstance);
             long docFreq = reader.docFreq(termInstance);
-            termsData.add(new TermVectorData(termStr, termFreq, docFreq, totalTermFreq));
+            TermVectorData termVectorData = new TermVectorData(termStr, termFreq, docFreq, totalTermFreq);
+            if (includeOffsets) {
+                PostingsEnum postingsEnum = termsEnum.postings(null, PostingsEnum.OFFSETS);
+                postingsEnum.nextDoc();
+                int freq = postingsEnum.freq();
+                for (int i = 0; i < freq; i++) {
+                    postingsEnum.nextPosition();
+                    termVectorData.addOffset(postingsEnum.startOffset(), postingsEnum.endOffset());
+                }
+            }
+            termsData.add(termVectorData);
         }
         return termsData;
     }

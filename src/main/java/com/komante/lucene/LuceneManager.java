@@ -67,5 +67,5 @@ public interface LuceneManager {
      * @param idValue   of a document
      * @param termField from where to take terms
      */
-    List<TermVectorData> getDocumentTerms(Index index, String idField, String idValue, String termField);
+    List<TermVectorData> getDocumentTerms(Index index, String idField, String idValue, String termField, boolean includeOffsets);
 }
