@@ -168,7 +168,7 @@ public class DefaultLuceneManager implements LuceneManager {
             TokenStream stream = TokenSources.getAnyTokenStream(indexHandle.getReader(), docid, "content", indexHandle.getAnalyzer());
             try {
                 TextFragment[] bestTextFragments = highlighter.getBestTextFragments(stream, text, false, luceneConfig.getHighlightsConfig()
-                    .getNumberOfDocumentFragments());
+                        .getNumberOfDocumentFragments());
                 List<String> fragmentsList = Stream.of(bestTextFragments).map(TextFragment::toString).collect(Collectors.toList());
                 highlightResults.add(new LuceneHighlightResult(doc, fragmentsList));
             } catch (InvalidTokenOffsetsException e) {
@@ -181,6 +181,7 @@ public class DefaultLuceneManager implements LuceneManager {
     /**
      * Full implementation of highlights without Lucene Highlighter and Fragmenter - which haven't produced satisfying results. Implemented
      * with TokenStream, source text, and custom made sentence aware highlighter and fragmenter.
+     *
      * @param query                  used to search for documents
      * @param highlightTermPredicate used to determine term to highlight. Another form of query, to return boolean
      */
@@ -225,6 +226,7 @@ public class DefaultLuceneManager implements LuceneManager {
 
     /**
      * Returns data for each term in one document from one field
+     *
      * @param index     document's index
      * @param idField   for a document, with unique values
      * @param idValue   of a document
@@ -242,6 +244,10 @@ public class DefaultLuceneManager implements LuceneManager {
         }
         int docNumber = uniqueDocumentNumber.get();
         Terms termVector = reader.getTermVector(docNumber, termField);
+        if (termVector == null) {
+            log.warn("No termVector found for {}, idField: {}, idValue: {}, termField: {}", index, idField, idValue, termField);
+            return new ArrayList<>();
+        }
         TermsEnum termsEnum = termVector.iterator();
         BytesRef term = null;
         List<TermVectorData> termsData = new ArrayList<>();
